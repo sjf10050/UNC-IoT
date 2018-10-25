@@ -18,6 +18,7 @@ try:
     cursor = db.cursor()
 except:
     db.close
+    
 def creatTable(keyword):
     tablename = keyword+str(time.time())
     sql = "CREATE TABLE `baidu`.`%s` (\
