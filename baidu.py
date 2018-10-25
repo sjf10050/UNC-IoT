@@ -12,13 +12,11 @@ import random
 import string
 import config as config
 import dbconfig as dbconfig
-# 打开数据库连接，使用 cursor() 方法创建一个游标对象 cursor
+
 db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User, dbconfig.db_Pwd, dbconfig.db_name)
 cursor = db.cursor()
-# 按搜索关键词创建表，keyword+8位随机字符
-# 返回表名称
+
 def creatTable(keyword):
-    #salt = ''.join(random.sample(string.ascii_letters + string.digits, 8))
     tablename = keyword+str(time.time())
     sql = "CREATE TABLE `baidu`.`%s` (\
         `ID` INT NOT NULL AUTO_INCREMENT,\
@@ -34,16 +32,11 @@ def creatTable(keyword):
         return 0
     return 0
 
-# 计算给定URL的标签数量
-
-
 def countTag(targetURL):
     response = request.urlopen(targetURL)
     page = response.read()
     soup = BeautifulSoup(page, 'lxml')
     return len(list(soup.find_all(True)))
-
-# 存储搜索结果至数据库
 
 
 def saveNewResult(s_table, s_Title, s_Link):
@@ -55,7 +48,6 @@ def saveNewResult(s_table, s_Title, s_Link):
         db.rollback()
 
 headers=config.headers
-# 获取搜索总结果
 
 def getresultcount(word):
     url = 'http://www.baidu.com/s?wd=' + urllib.parse.quote(word)
@@ -64,11 +56,8 @@ def getresultcount(word):
     soup = BeautifulSoup(page, 'lxml')
     for x in soup.find_all('span', string=re.compile('百度为您找到相关结果')):
         result = int((re.sub(r"\D", "", x.renderContents().decode("utf-8"))))
-        print('大约有'+str(result)+'条记录')
+        print('results count:  '+str(result))
         return result
-
-# 处理每一页结果
-
 
 def geturl(path, tablename):
     response = request.urlopen(path)
@@ -82,14 +71,12 @@ def geturl(path, tablename):
         title.strip()
         baidu_url = requests.get(
             url=href, headers=headers, allow_redirects=False)
-        real_url = baidu_url.headers['Location']  # 得到网页原始地址
+        real_url = baidu_url.headers['Location']  # Get origin URl
         if real_url.startswith('http'):
             print(title)
             print(real_url)
             saveNewResult(tablename, ''+title, ''+real_url)
         db.commit()
-
-# 处理搜索结果
 
 def getfromBaidu(word):
     tablename = creatTable(word)
@@ -104,15 +91,15 @@ def getfromBaidu(word):
         pagenum = pagecount
     for i in range(pagenum):
         path = url + '&pn='+str(i)
-        result = pool.apply_async(geturl, (path, tablename))  # 多进程
+        result = pool.apply_async(geturl, (path, tablename))  #use multi processing
     pool.close()
     pool.join()
 
 
 if __name__ == '__main__':
     try:
-        print('检索到'+str(countTag('http://www.baidu.com'))+'个标签')
-        getfromBaidu('中国联通')
+        print('Report:  '+str(countTag('http://www.baidu.com'))+' tags')
+        getfromBaidu('chian Unicom')
         db.commit()
         db.close()
     except KeyboardInterrupt:
