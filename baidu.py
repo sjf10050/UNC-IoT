@@ -13,9 +13,11 @@ import string
 import config as config
 import dbconfig as dbconfig
 
-db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User, dbconfig.db_Pwd, dbconfig.db_name)
-cursor = db.cursor()
-
+try:
+    db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User, dbconfig.db_Pwd, dbconfig.db_name)
+    cursor = db.cursor()
+except:
+    db.close
 def creatTable(keyword):
     tablename = keyword+str(time.time())
     sql = "CREATE TABLE `baidu`.`%s` (\
@@ -100,8 +102,8 @@ if __name__ == '__main__':
     try:
         print('Report:  '+str(countTag('http://www.baidu.com'))+' tags')
         getfromBaidu('chian Unicom')
-        db.commit()
-        db.close()
     except KeyboardInterrupt:
+        print("KeyboardInterrupt")
+    finally:
         db.commit()
         db.close()
