@@ -14,7 +14,7 @@ import dbconfig as dbconfig
 import csv
 import codecs
 import json
-
+import xlwt
 
 def executeSQL(sql):
     try:
@@ -36,13 +36,23 @@ def exportToFile(tablename):
     #2:检测文件是否存在
     #3:创建csv、excel
     filenameCSV = 'results/'+tablename+'.csv'
+    filenameXLS = 'results/'+tablename+'.xls'
     sql = 'SELECT * FROM baidu.`' + tablename+ '`;'
     results = executeSQL(sql)
+    workbook = xlwt.Workbook(encoding='utf-8',style_compression=0)
+    sheet = workbook.add_sheet('SearchRecords',cell_overwrite_ok=True)
+    sheet.write(0,0, u"title")
+    sheet.write(0,1, u"link")
+    excelRow=1
     with codecs.open(filenameCSV, 'w', 'utf-8') as filehandle:
         write = csv.writer(filehandle, dialect='excel')
         print('in file')
         for result in results:
-            write.writerow(result)
+            write.writerow(result)#csv write in
+            sheet.write(excelRow,0, str(result[1]))#xls write in
+            sheet.write(excelRow,1, str(result[2]))#xls write in
+            excelRow+=1
+    workbook.save(filenameXLS)
     return 1
 
 
