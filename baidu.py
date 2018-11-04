@@ -12,15 +12,20 @@ import random
 import string
 import config as config
 import dbconfig as dbconfig
+import csv
+import codecs
 
 try:
-    db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User, dbconfig.db_Pwd, dbconfig.db_name)
+    db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User,
+                         dbconfig.db_Pwd, dbconfig.db_name)
     cursor = db.cursor()
 except:
     db.close
-    
+
+headers = config.headers
+
 def creatTable(keyword):
-    tablename = keyword+str(time.time())
+    tablename = keyword+str(time.strftime('%Y%m%d%H%M%S',time.localtime(time.time())))
     sql = "CREATE TABLE `baidu`.`%s` (\
         `ID` INT NOT NULL AUTO_INCREMENT,\
         `s_title` VARCHAR(45) NULL,\
@@ -34,6 +39,7 @@ def creatTable(keyword):
         db.rollback()
         return 0
     return 0
+
 
 def countTag(targetURL):
     response = request.urlopen(targetURL)
@@ -50,8 +56,6 @@ def saveNewResult(s_table, s_Title, s_Link):
     except:
         db.rollback()
 
-headers=config.headers
-
 def getresultcount(word):
     url = 'http://www.baidu.com/s?wd=' + urllib.parse.quote(word)
     response = request.urlopen(url)
@@ -61,6 +65,7 @@ def getresultcount(word):
         result = int((re.sub(r"\D", "", x.renderContents().decode("utf-8"))))
         print('results count:  '+str(result))
         return result
+
 
 def geturl(path, tablename):
     response = request.urlopen(path)
@@ -76,17 +81,18 @@ def geturl(path, tablename):
             url=href, headers=headers, allow_redirects=False)
         real_url = baidu_url.headers['Location']  # Get origin URl
         if real_url.startswith('http'):
-            print(title)
-            print(real_url)
+            #print(title)
+            #print(real_url)
             saveNewResult(tablename, ''+title, ''+real_url)
         db.commit()
+
 
 def getfromBaidu(word):
     tablename = creatTable(word)
     if tablename == 0:
         return 0
     url = config.targerWeb + urllib.parse.quote(word)
-    pool = multiprocessing.Pool(config.threadnum )
+    pool = multiprocessing.Pool(config.threadnum)
     pagecount = getresultcount(word)//10
     if pagecount >= 76:
         pagenum = 76
@@ -94,7 +100,8 @@ def getfromBaidu(word):
         pagenum = pagecount
     for i in range(pagenum):
         path = url + '&pn='+str(i)
-        result = pool.apply_async(geturl, (path, tablename))  #use multi processing
+        result = pool.apply_async(
+            geturl, (path, tablename))  # use multi processing
     pool.close()
     pool.join()
 
@@ -102,7 +109,7 @@ def getfromBaidu(word):
 if __name__ == '__main__':
     try:
         print('Report:  '+str(countTag('http://www.baidu.com'))+' tags')
-        getfromBaidu('chian Unicom')
+        getfromBaidu('china unicom')
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
     finally:
