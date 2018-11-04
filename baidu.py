@@ -24,8 +24,10 @@ except:
 
 headers = config.headers
 
+
 def creatTable(keyword):
-    tablename = keyword+str(time.strftime('%Y%m%d%H%M%S',time.localtime(time.time())))
+    tablename = keyword + \
+        str(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
     sql = "CREATE TABLE `baidu`.`%s` (\
         `ID` INT NOT NULL AUTO_INCREMENT,\
         `s_title` VARCHAR(45) NULL,\
@@ -56,6 +58,7 @@ def saveNewResult(s_table, s_Title, s_Link):
     except:
         db.rollback()
 
+
 def getresultcount(word):
     url = 'http://www.baidu.com/s?wd=' + urllib.parse.quote(word)
     response = request.urlopen(url)
@@ -81,8 +84,8 @@ def geturl(path, tablename):
             url=href, headers=headers, allow_redirects=False)
         real_url = baidu_url.headers['Location']  # Get origin URl
         if real_url.startswith('http'):
-            #print(title)
-            #print(real_url)
+            # print(title)
+            # print(real_url)
             saveNewResult(tablename, ''+title, ''+real_url)
         db.commit()
 
@@ -105,13 +108,12 @@ def getfromBaidu(word):
     pool.close()
     pool.join()
 
-
-if __name__ == '__main__':
-    try:
-        print('Report:  '+str(countTag('http://www.baidu.com'))+' tags')
-        getfromBaidu('china unicom')
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt")
-    finally:
-        db.commit()
-        db.close()
+# if __name__ == '__main__':
+#     try:
+#         print('Report:  '+str(countTag('http://www.baidu.com'))+' tags')
+#         getfromBaidu('china unicom')
+#     except KeyboardInterrupt:
+#         print("KeyboardInterrupt")
+#     finally:
+#         db.commit()
+#         db.close()
