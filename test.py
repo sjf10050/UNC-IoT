@@ -18,8 +18,11 @@ def writrToExcel():
     
 
 if __name__ == '__main__':
-    writrToExcel()
-    print('aaa')
+    #writrToExcel()
+    #a="aaa"
+    #s="this is %s ?"%a
+    #print(s)
+    dbAPI.DelResult("abcd")
     #print(baidu.getresultcount('apple'))
     #dbAPI.exportToFile("china Unicom1540973897.505704")
     #baidu.getresultcount('apple')

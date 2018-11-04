@@ -9,12 +9,6 @@ import dbAPI as dbAPI
 from flask import Response
 import os
 app = Flask(__name__)
-# @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
-# def get_task(task_id):
-#     task = filter(lambda t: t['id'] == task_id, tasks)
-#     if len(task) == 0:
-#         abort(404)
-#     return jsonify({'task': task[0]})
 
 # @app.route('/large.csv')
 # def generate_large_csv():
@@ -58,6 +52,16 @@ def getresultcount(keyword):
     rst.headers['Access-Control-Allow-Origin'] = '*' #任意域名
     return rst
 
+
+
+
+@app.route('/DelResult/<string:tablename>', methods=['GET'])
+def DelResult(tablename):
+    #baidu.getfromBaidu(keyword)
+    dbAPI.DelResult(tablename)
+    rst = make_response("doing")
+    rst.headers['Access-Control-Allow-Origin'] = '*' #任意域名
+    return rst
 
 # return all
 @app.route('/SearchRecords', methods=['GET'])

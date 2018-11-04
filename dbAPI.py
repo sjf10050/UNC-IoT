@@ -52,6 +52,7 @@ def exportToFile(tablename):
             sheet.write(excelRow,0, str(result[1]))#xls write in
             sheet.write(excelRow,1, str(result[2]))#xls write in
             excelRow+=1
+
     workbook.save(filenameXLS)
     return 1
 
@@ -61,29 +62,39 @@ def getSearchRecords():
     #拉取数据库中所有的表，以json返回
     # {时间，关键词，记录数量}
     pattern = re.compile("'(.*)'")
-    sql='select TABLE_NAME from information_schema.tables where TABLE_SCHEMA="baidu";'
+    sql='select TABLE_NAME from information_schema.tables where TABLE_SCHEMA="%s";' % (dbconfig.db_name)
     results = executeSQL(sql)
     for result in results:
         str_re1=pattern.findall(str(result))
         tablename=str_re1[0]
-        sql='select count(*) from baidu.`'+tablename+'`;'
+        sql='select count(*) from %s.`%s`;' %(dbconfig.db_name,tablename)
         num= int(re.sub(r"\D", "", str(executeSQL(sql))))
-        #### 
         time=tablename[-14:]
         keyword=tablename[:-14]
-        ####
         data.append([tablename,keyword,time,num]) 
     jsona = json.dumps(data)
-    #print(jsona)
+   
     return jsona
 
 
 def DelResult(tablename):
-    checkTableName(tablename)
+    #checkTableName(tablename)
+    try:
+        db = pymysql.connect(dbconfig.db_Address, dbconfig.db_User,
+                         dbconfig.db_Pwd, dbconfig.db_name)
+        cursor = db.cursor()
+        cursor.execute("drop table "+tablename)
+        db.close
+    except:
+        db.close
+        print('fail to excute sql ')
+        return 0
+    return 1
     #1:删除指定表格
     # 2检测CSV Excel 并删除
-    pass
+ 
 
 def checkTableName(tablename):
+
     # 1 查看数据路中是否存在该表
     pass
