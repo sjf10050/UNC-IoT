@@ -10,7 +10,6 @@ from flask import Response
 import os
 app = Flask(__name__)
 
-
 @app.route('/download/<string:fileFormat>/<string:tablename>', methods=['get'])
 def downloadfile(fileFormat, tablename):
     if(dbAPI.exportToFile(tablename)):
