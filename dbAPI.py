@@ -25,10 +25,10 @@ def executeSQL(sql):
         cursor.close
         db.close
         return results
-    except:
+    except Exception as e:
         cursor.close
         db.close
-        print('fail to excute sql ')
+        print(e)
         return 0
 
 
@@ -49,7 +49,7 @@ def exportToFile(tablename):
     excelRow = 1
     with codecs.open(filenameCSV, 'w', 'utf-8') as filehandle:
         write = csv.writer(filehandle, dialect='excel')
-        print('in file')
+        # print('in file')
         for result in results:
             write.writerow(result)  # csv write in
             sheet.write(excelRow, 0, str(result[1]))  # xls write in
@@ -76,7 +76,7 @@ def getSearchRecords():
         keyword = tablename[:-14]
         data.append([tablename, keyword, time, num])
     jsona = json.dumps(data)
-    print(type(jsona))
+    # print(type(jsona))
     return jsona
 
 
