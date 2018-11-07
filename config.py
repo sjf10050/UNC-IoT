@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 targerWeb = 'http://www.baidu.com/s?wd='
-threadnum = 4
+threadnum = 8
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',

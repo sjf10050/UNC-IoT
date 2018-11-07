@@ -10,6 +10,15 @@ from flask import Response
 import os
 app = Flask(__name__)
 
+	# assertEqual(a, b)     a == b      
+    # assertNotEqual(a, b)     a != b      
+    # assertTrue(x)     bool(x) is True      
+    # assertFalse(x)     bool(x) is False      
+    # assertIsNone(x)     x is None     
+    # assertIsNotNone(x)     x is not None   
+    # assertIn(a, b)     a in b    
+    # assertNotIn(a, b)     a not in b
+
 @app.route('/download/<string:fileFormat>/<string:tablename>', methods=['get'])
 def downloadfile(fileFormat, tablename):
     if(dbAPI.exportToFile(tablename)):
@@ -32,6 +41,7 @@ def search(keyword):
 def getresultcount(keyword):
     rst = make_response(str(baidu.getresultcount(keyword)))
     rst.headers['Access-Control-Allow-Origin'] = '*'
+    print(rst)
     return rst
 
 

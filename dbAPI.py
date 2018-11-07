@@ -22,9 +22,11 @@ def executeSQL(sql):
         cursor = db.cursor()
         cursor.execute(sql)
         results = cursor.fetchall()
+        cursor.close
         db.close
         return results
     except:
+        cursor.close
         db.close
         print('fail to excute sql ')
         return 0
@@ -38,6 +40,8 @@ def exportToFile(tablename):
     filenameXLS = 'results/'+tablename+'.xls'
     sql = 'SELECT * FROM baidu.`' + tablename + '`;'
     results = executeSQL(sql)
+    if results==0:
+         return 0
     workbook = xlwt.Workbook(encoding='utf-8', style_compression=0)
     sheet = workbook.add_sheet('SearchRecords', cell_overwrite_ok=True)
     sheet.write(0, 0, u"title")
@@ -61,8 +65,7 @@ def getSearchRecords():
     # fatch tables ，return json
     # {time ，keyword，count}
     pattern = re.compile("'(.*)'")
-    sql = 'select TABLE_NAME from information_schema.tables where TABLE_SCHEMA="%s";' % (
-        dbconfig.db_name)
+    sql = 'select TABLE_NAME from information_schema.tables where TABLE_SCHEMA="%s";'%dbconfig.db_name
     results = executeSQL(sql)
     for result in results:
         str_re1 = pattern.findall(str(result))
@@ -73,7 +76,7 @@ def getSearchRecords():
         keyword = tablename[:-14]
         data.append([tablename, keyword, time, num])
     jsona = json.dumps(data)
-
+    print(type(jsona))
     return jsona
 
 
