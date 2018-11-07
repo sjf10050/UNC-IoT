@@ -122,29 +122,3 @@ if __name__ == '__main__':
         print("KeyboardInterrupt")
     finally:
         dbPool.close()
-
-
-class reptileBaidu():
-    def __init__(self, keyword,dbPool):
-        self.keyword=keyword
-        self.tablename=keyword+str(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time())))
-        self.__dbPool = dbPool
-        self.countTag()
-
-    def getResultCount(self):
-        url = 'http://www.baidu.com/s?wd=' + urllib.parse.quote(self.keyword)
-        response = request.urlopen(url)
-        page = response.read()
-        soup = BeautifulSoup(page, 'lxml')
-        for x in soup.find_all('span', string=re.compile('百度为您找到相关结果')):
-            result = int((re.sub(r"\D", "", x.renderContents().decode("utf-8"))))
-            print('results count:  '+str(result))
-            self.ResultCount=result
-            return result
-    
-    def countTag(self):
-        response = request.urlopen('http://www.baidu.com')
-        page = response.read()
-        soup = BeautifulSoup(page, 'lxml')
-        self.tagCount=len(list(soup.find_all(True)))
-        

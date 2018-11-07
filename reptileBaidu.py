@@ -12,8 +12,6 @@ import random
 import string
 import config as config
 import dbconfig as dbconfig
-import csv
-import codecs
 from DBUtils.PooledDB import PooledDB
 
 dbPool = PooledDB(pymysql,5,host=dbconfig.db_Address,user=dbconfig.db_User,passwd=dbconfig.db_Pwd,db=dbconfig.db_name,port=3306)
